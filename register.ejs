@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Document</title>
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+
+
+    <!--
+    <div class="jumbotron row d-flex justify-content-center text-center ">
+    <div class="container">
+    <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+        
+            <div class="col-auto">
+              <label for="inputPassword6" class="col-form-label">Password</label>
+            </div>
+            <div class="col-auto">
+              <input type="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpInline" placeholder="Create Password">
+            </div>
+            <div class="col-auto">
+              <span id="passwordHelpInline" class="form-text">
+                Must be 8-20 characters long.
+              </span>
+            </div>
+            <div class="col-auto">
+                <input type="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpInline" placeholder="One more time!">
+              </div>
+
+
+     </form>
+         
+            </div>
+          </div>
+
+        -->
+
+        <div class="jumbotron row d-flex justify-content-center text-center ">
+            <div class="container">
+                <form>
+                    <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="text" id="name" class="form-control" />
+                          <label class="form-label" for="form3Example1c">Your Name</label>
+                        </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="email" id="form3Example3c" class="form-control" />
+                          <label class="form-label" for="form3Example3c">Your Email</label>
+                        </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="password" id="password" class="form-control" />
+                          <label class="form-label" for="form3Example4c">Password</label>
+                        </div>
+                        <div class="col-auto">
+                            <span id="line" class="form-text">
+                              Must be 8-20 characters long.
+                            </span>
+                          </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="password" id="password1" class="form-control">
+                          <label class="form-label" for="form3Example4cd">Repeat your password</label>
+                          <br>
+                          <label class="d-none text-danger" id="wrong">Your password is wrong!</label>
+                          <label class="d-none text-primary" id="correct">Your password is correct!</label>
+                          <button type="submit" id="check" class="btn btn-primary ">check</button>
+                        </div>
+      
+                      </div>
+
+                      <div class="gender-type">
+                         <select class="form-control">
+                            <option selected=""> Gender</option>
+                         <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                        </div>
+                        <br><br>
+                        <div class="recommendation">
+                            <select class="form-control">
+                                <option selected="">Recommendation</option>
+                                <option>Sports</option>
+                                <option>Music</option>
+                                <option>Events</option>
+                            </select>
+                        </div>
+                        <br>
+                        <label>
+                        <button type="submit" id="submit" class="btn btn-primary ">Submit</button>
+                        <a class="btn btn-primary " href="/main">Go back</a>
+                        </label>
+                </form>
+     
+            </div>
+            
+        </div>
+
+    
+
+      <div class="text-right">
+ 
+      </div>
+
+      <script>
+        const name= document.getElementById("name");
+        const password= document.getElementById("password");
+        const font= name.value;
+        const submit= document.getElementById("submit");
+        const line = document.getElementById("line");
+        const password1 = document.getElementById("password1");
+        const check = document.getElementById("check");
+        const wrong= document.getElementById("wrong");
+        const correct = document.getElementById("correct");
+
+
+        function action3(event){
+          event.preventDefault();
+          if(password.value!=password1.value){
+            wrong.classList.remove("d-none");
+          }else if(password.value==password1.value){
+            correct.classList.remove("d-none");
+          }
+        }
+        check.addEventListener("click", action3)  
+
+          
+          function action1(event){
+              event.preventDefault();  
+              if(name.value.length>5){
+                console.log("hello");
+            }else{
+              console.log("bye");
+            }
+          }
+
+            function action2(event){
+              event.preventDefault();
+              if(password.value.length<8){
+                line.classList.add("text-primary");
+              }else if(password.value.length>20){
+                console.log("green");
+                
+              }
+        
+    
+            }
+          submit.addEventListener("click", action2);
+          
+          
+      </script>
+     <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
