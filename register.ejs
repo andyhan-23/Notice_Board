@@ -135,12 +135,14 @@
         const correct = document.getElementById("correct");
 
 
-        function action3(event){
+         function action3(event){
           event.preventDefault();
           if(password.value!=password1.value){
             wrong.classList.remove("d-none");
+            correct.classList.add("d-none");
           }else if(password.value==password1.value){
             correct.classList.remove("d-none");
+            wrong.classList.add("d-none");
           }
         }
         check.addEventListener("click", action3)  
