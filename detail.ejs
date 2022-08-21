@@ -25,6 +25,7 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
   <title> 게시판 만들기</title>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script> 
 </head>
 <style>
   .wrap {
@@ -58,131 +59,79 @@
   }
 </style>
 
-<script>
-  //주소에 있는 정보 가져올때 사용
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const borderDate = urlParams.get("borderDate");
 
-  $(document).ready(function () {
-    get_detail()
-  })
-  function get_detail() {
-    $.ajax({
-      type: "GET",
-      url: `api/borderList/${borderDate}`,
-      data: {},
-      success: function (response) {
-        let bordersDetail = response["detail"];
-        let dateDetail = bordersDetail['borderDate']
-        //db에 저장된 date moment 포맷으로 변경
-        let date = moment(bordersDetail['borderDate']).format('YYYY-MM-DD HH:mm')
-        // console.log(bordersDetail)
-        // console.log(date)
-        $("#borderName").text(bordersDetail["borderTitle"]);
-        $("#borderNick").text(bordersDetail["borderUserNick"]);
-        $("#borderDate").text(date);
-        $("#borderContent").text(bordersDetail["borderContent"]);
-      }
-    });
-  }
-
-  //수정 버튼 누를 시 correct에 불러온 bordersDetail를 가져오고 그중 borderDate를 불러온다.
-  //이후 파라미터 값으로 가져온다.
-  function correct(bordersDetail){
-      location.href="/borderCorrect?borderDate=" + borderDate
-  }
-
-  //삭제 버튼 클릭시 모달 스타트
-  function modal_start() {
-    $('#cartModal').modal('show');
-  }
-
-  function modal_ok() {
-    $.ajax({
-      type: "GET",
-      url: `api/borderList/${borderDate}`,
-      data: {},
-      success: function (response) {
-        let bordersInfo = response["detail"];
-        //db에 저장된 비밀번호 가져오기
-        let pwd = bordersInfo['borderPwd']
-        //비밀번호 입력창에 입력한 값과 db로 가져온 pwd를 비교하여 검사
-        if (pwd === $(borderPwd).val()) {
-          remove()
-        }
-        else {
-          alert("비밀번호가 다릅니다.");
-        }
-      }
-    });
-  }
-    /*삭제*/
-      function remove() {
-        $.ajax({
-          type: "DELETE",
-          url: `/api/borderList/${borderDate}`,
-          data: {},
-          success: function(response) {
-            if (response["result"] == "success") {
-              location.href="/borderList"
-            }
-          }
-        });
-      }
-</script>
 
 <body>
   <div class='wrap'>
-    <h1 class="text-primary">샘플 게시판</h1>
+    <h1 class="text-primary text-center"> 게시판</h1>
     <div class="form-group">
       <div class="label">
         <label for="exampleFormControlInput1" style="font-weight: bold;">제목 :</label>
-        
-        <label id="borderName"></label>
+            <span id="title"><i></i></span>
+        <label id="borderName"><%= data.title %></label>
       </div>
       <div class="label">
         <label for="exampleFormControlInput1" style="font-weight: bold;">작성자 :</label>
-        <label id="borderNick"></label>
+        <label id="borderNick"><%= data.nickname %></label>
       </div>
       <div class="label">
         <label for="exampleFormControlInput1" style="font-weight: bold;">작성 날짜 : </label>
-        <label id="borderDate"></label>
+        <label id="borderDate"><%= data.date %></label>
       </div>
       <div class="label">
         <label for="exampleFormControlInput1">내용</label>
-        <textarea class="form-control" id="borderContent" type="text" rows="10" readonly></textarea>
+        <textarea class="form-control" id="borderContent" type="text" rows="10" readonly><%= data.contents %></textarea>
       </div>
     </div>
     <div class="btncls">
       <button class="btn btn-primary" type="submit" onclick="correct()">수정</button>
-      <button class="btn btn-primary" type="submit" onclick="modal_start()">삭제</button>
+      <button class="btn btn-danger delete" data-id="<%=data._id%>" type="button">삭제</button>
     </div>
   </div>
-  <div class="modal text-left" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="cartModalLabel">알림</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          비밀번호를 입력하세요
-        </div>
-        <input class="inputPwd" id="borderPwd" type="number" placeholder="숫자를 입력하세요" />
-        <div class="modal-footer">
-          <button type="button" class="btn btn-sparta" onclick='modal_ok()'>
-            확인
-          </button>
-          <button type="button" class="btn btn-outline-sparta" data-dismiss="modal">
-            취소
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 </body>
+
+
+<script>
+
+
+    /*삭제*/
+    $('.delete').click(function(e){
+        var number = e.target.dataset.id;
+        console.log("hello");
+        $.ajax({
+            method: 'DELETE',
+            url: '/delete',
+            data: {_id : number},
+        }).done(function(결과){
+            alert("삭제되었습니다.")
+            history.go(-1)
+        }).fail(function(xhr, textStatus, errorThrown){
+        console.log(xhr, textStatus, errorThrown);
+      });
+    })
+   
+</script>
+
+
+    /*
+    $('.delete').click(function(e) {
+      var 글번호 = e.target.dataset.id; //e.target은 지금 누른 요소
+      var 지금누른거 = $(this);
+  
+      $.ajax({
+      method : 'DELETE', 
+      url : '/delete',   
+      data : {_id : 글번호} 
+      }).done(function(결과){
+        //요청이 성공하면 이걸 실행
+        console.log('성공')
+        지금누른거.parent('li').fadeOut(); //fadeOut -> 서서히 사라지게 함
+      }).fail(function(xhr, textStatus, errorThrown){
+        console.log(xhr, textStatus, errorThrown);
+      });
+    })
+  */
+  
+
 </html>
