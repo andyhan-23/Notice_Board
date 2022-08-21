@@ -10,6 +10,15 @@ require('dotenv').config()
 var db;
 
 
+function 로그인유무(req, res, next) {
+    if (req.user) {
+        next()
+    } else {
+        res.redirect('/login');
+    }
+}
+
+
 MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function(에러, client){
 
     if(에러) return console.log(에러)
@@ -48,38 +57,107 @@ app.get('/write', 로그인유무, function(req, res){
     res.render('write.ejs');
 })
 
-app.post('/register', function(req, res){ 
-    
-    db.collection('login').insertOne({ name : req.body.name, email : req.body.email, password : req.body.password, gender : req.body.gender, recommendation : req.body.recommendation}, function(에러, 결과){
-        console.log('저장')
-    })
+app.get('/fail', function(req, res) {
+    res.send('<script type="text/javascript">alert("이메일 혹은 비밀번호가 올바르지 않습니다.");window.location = document.referrer;</script>') 
 })
 
-app.post('/login', passport.authenticate('local', {failureRedirect : '/login'}), function(req, res) {
-    res.redirect('/')
+app.post('/register', function(req, res){ 
+    
+    db.collection('login').findOne({email : req.body.email} , function(에러, 결과) {
+        if(결과 != null) {
+            if(req.body.email == 결과.email)
+                res.json('중복된이메일');
+            }else {
+                db.collection('login').insertOne({ nickname : req.body.nickname, email : req.body.email, password : req.body.password, gender : req.body.gender, recommendation : req.body.recommendation}, function(에러, 결과){
+                    console.log('저장')
+                    res.redirect('/login');
+                }) 
+            }
+        })
+    })
+
+    app.post('/checkName', function(req, res) {
+        db.collection('login').findOne({nickname : req.body.checkNickname}, function(에러, 결과){
+            if(결과 != null) {
+                res.json('사용불가능');
+            } else {
+                res.json('사용가능');
+            }
+        })
+    })
+
+app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res) {
+    res.redirect('/');
 });
 
 
 app.post('/add', function(req, res) {
-    db.collection('post').insertOne({ email : req.user.email, title : req.body.title, contents : req.body.contents, category : req.body.category, date : new Date()}, function(에러, 결과) {
+    
+    var 이동할곳 = req.body.category;
+
+    db.collection('counter').findOne({name : '게시물갯수'}, function(에러, 결과){
+        console.log(결과.totalPost);
+        var 총게시물갯수 = 결과.totalPost;
+    
+    db.collection('post').insertOne({_id : 총게시물갯수 + 1, nickname : req.user.nickname, title : req.body.title, contents : req.body.contents, category : req.body.category, date : new Date()}, function(에러, 결과) {
         console.log('글 저장 완료')
+
+        db.collection('counter').updateOne({name : '게시물갯수'}, {$inc : {totalPost : 1}}, function(에러, 결과) {
+            if(에러) {return console.log(에러)}
+        })
+        res.redirect('/' + 이동할곳);
     })
 
-})
+});
+});
 
 app.get('/mypage',로그인유무, function(req, res) {
-    db.collection('post').find({email : req.user.email}).toArray(function(에러, 결과) {
+    db.collection('post').find({nickname : req.user.nickname}).toArray(function(에러, 결과) {
     res.render('mypage.ejs', {posts : 결과})
     })
 })
 
-function 로그인유무(req, res, next) {
-    if (req.user) {
-        next()
-    } else {
-        res.redirect('login.ejs');
-    }
-}
+app.get('/sports', function(req, res) {
+    db.collection('post').find({category : 'sports'}).toArray(function(에러, 결과){
+        res.render('sports.ejs', {posts : 결과})
+    })
+})
+
+app.get('/music', function(req, res) {
+    db.collection('post').find({category : 'music'}).toArray(function(에러, 결과){
+        res.render('music.ejs', {posts : 결과})
+    })
+})
+
+app.get('/incident', function(req, res) {
+    db.collection('post').find({category : 'incident'}).toArray(function(에러, 결과){
+        res.render('incident.ejs', {posts : 결과})
+    })
+})
+
+app.get('/list', function(req, res) {
+    db.collection('post').find({category : 'incident'}).toArray(function(에러, 결과){
+        res.render('list.ejs', {posts : 결과})
+    })
+})
+
+
+
+app.get('/others', function(req, res) {
+    db.collection('post').find({category : 'others'}).toArray(function(에러, 결과){
+        res.render('others.ejs', {posts : 결과})
+    })
+})
+
+app.get('/detail:id', function(req, res) {
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(에러, 결과) {
+        res.render('detail.ejs', {data : 결과})
+    })
+})
+
+
+
+
 
 passport.use(new LocalStrategy({
     usernameField: 'email',
@@ -114,7 +192,10 @@ passport.deserializeUser(function(이메일, done){ //아이디 == user.id
 
 
 
+
+
 app.use(express.static('views'));
+
 
 
 
