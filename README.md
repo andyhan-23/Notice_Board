@@ -1,2 +1,1 @@
-# project6
-풀스택 기반 게시판(js)작성
+# NODE JS 기반 crud를 활용한 게시판 
